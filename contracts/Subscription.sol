@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^ 0.8.0;
+pragma solidity >0.7.0;
+pragma abicoder v2;
 
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
@@ -36,9 +37,13 @@ contract Subscription{
         price = newPrice;
     }
 
+    function getSubscriptionStatus(address user) external view returns(bool){
+        return subscriptions[user];
+    }
+
     function paySubscription() external payable{
         if (msg.value > 0) {
-            swapEthToDai();//TODO
+            swapEthToDai();
         }
         
         else{
@@ -51,14 +56,12 @@ contract Subscription{
     }
 
     function swapEthToDai() internal{
-        require(msg.value > 0, "Must pass non 0 ETH amount");
-
         ISwapRouter.ExactOutputSingleParams memory params =
             ISwapRouter.ExactOutputSingleParams({
                 tokenIn: WETH9,
                 tokenOut: DAI,
                 fee: 3000,
-                recipient: msg.sender,
+                recipient: address(this),
                 deadline: block.timestamp + 15,
                 amountOut: price,
                 amountInMaximum: msg.value,
