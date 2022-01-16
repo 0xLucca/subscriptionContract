@@ -332,6 +332,9 @@ const main = async () => {
   const address = "0xc7ad46e0b8a400bb3c915120d284aafba8fc4735";
   const dai = new ethers.Contract(address, abi, owner);
 
+  let userDaiBalance = await dai.balanceOf(owner.getAddress());
+  console.log("Owner DAI balance:", ethers.utils.formatEther(userDaiBalance));
+
   const subscriptionContractFactory = await hre.ethers.getContractFactory(
     "Subscription"
   );
